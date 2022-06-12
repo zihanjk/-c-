@@ -1,0 +1,77 @@
+/**
+ * 求一个数组的最大子数组之和
+ * @author JiaJoa
+ *
+ */
+public class Algorithm_GetMaxSubString {
+
+    public static void main(String[] args) {
+        int[] data = {1,-2,4,8,-4,7,-1,-5};
+        System.out.println(Algorithm_GetMaxSubString.getMaxSubString(data));
+        System.out.println(Algorithm_GetMaxSubString.getMaxSubString2(data));
+        System.out.println(Algorithm_GetMaxSubString.getMaxSubIntByDP(data));
+    }
+
+    //以某个点及其后的字串最大值思路求解最大数组之和，时间复杂度O(n^2)
+    public static int getMaxSubString(int[] data){
+        int size = data.length;
+        int maxNum = Integer.MIN_VALUE;
+        for(int i=0;i<size;i++){
+            int sum = 0;
+            for(int j=i;j<size;j++){
+                sum+=data[j];
+                if(sum>maxNum)
+                    maxNum = sum;
+            }
+        }
+        return maxNum;
+    }
+
+    //以某个点及其后的字串最大值思路求解最大数组之和，时间复杂度O(n)
+    public static int getMaxSubString2(int[] data){
+        int size = data.length;
+        int nAll = Integer.MIN_VALUE; //记录全局最大值
+        int nEnd = 0;
+        int start = 0;
+        int end = 0;
+
+        for(int i=0;i<size;i++){
+            if(nEnd<0){     //若nEnd小于0，说明字串最后一个数值小于0，则重新开始计算字串
+                nEnd = data[i];
+                start = i;
+            }else{
+                nEnd += data[i];
+            }
+            if(nEnd>nAll){
+                nAll = nEnd;
+                end = i;
+            }
+        }
+
+        StringBuilder sb = new StringBuilder();
+        for(int i=start;i<=end;i++)
+            sb.append(data[i]+",");
+        System.out.println(sb.toString());
+
+        return nAll;
+    }
+
+
+    //使用动态规划的思想求解最大数组之和，时间复杂度O(n)
+    //使用两个变量，一个保存当前位置前最大字串值，一个用于探测进一步
+    public static int getMaxSubIntByDP(int[] data){
+        int size = data.length;
+        int nAll = data[0];  //记录数组的前n个数字中最大子串的和，初始化为第一个数字data[0]
+        int nEnd = data[0];  //在字串包含了第n个数字时，数组的前n个数字中最大子串的和,初始化为第一个数字data[0]
+        for(int i=1;i<size;i++){
+            nEnd = max(nEnd+data[i],data[i]);
+            nAll = max(nEnd,nAll);
+        }
+        return nAll;
+    }
+
+    //求最大值
+    public static int max(int a,int b){
+        return a>b?a:b;
+    }
+}
